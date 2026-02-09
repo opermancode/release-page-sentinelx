@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentinex | Orchestration for the Modern Fleet</title>
+    <title>NeuRader | Infrastructure Intuition</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
@@ -28,7 +28,6 @@
             overflow-x: hidden;
         }
 
-        /* --- Ambient Background Glow --- */
         .glow {
             position: absolute;
             top: 0;
@@ -41,7 +40,6 @@
             z-index: 0;
         }
 
-        /* --- Navigation --- */
         nav {
             display: flex;
             justify-content: space-between;
@@ -51,11 +49,9 @@
             z-index: 10;
         }
 
-        /* SVG LOGO STYLING */
         .logo {
             font-size: 1.2rem;
             font-weight: 800;
-            letter-spacing: -0.5px;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -63,23 +59,23 @@
             color: white;
         }
 
+        /* NEURADER RADAR LOGO */
         .logo svg {
             width: 32px;
             height: 32px;
-            fill: var(--accent);
-            filter: drop-shadow(0 0 8px var(--accent));
-            animation: pulse 3s infinite ease-in-out;
+            fill: none;
+            stroke: var(--accent);
+            filter: drop-shadow(0 0 5px var(--accent));
         }
 
-        @keyframes pulse {
-            0%, 100% { 
-                filter: drop-shadow(0 0 2px var(--accent));
-                transform: scale(1);
-            }
-            50% { 
-                filter: drop-shadow(0 0 15px var(--accent));
-                transform: scale(1.1);
-            }
+        .radar-circle {
+            transform-origin: center;
+            animation: radar-pulse 2s infinite;
+        }
+
+        @keyframes radar-pulse {
+            0% { r: 2; opacity: 1; stroke-width: 2; }
+            100% { r: 10; opacity: 0; stroke-width: 1; }
         }
 
         .nav-links a {
@@ -93,26 +89,11 @@
 
         .nav-links a:hover { color: var(--accent); }
 
-        /* --- Hero --- */
         .hero {
             padding: 80px 8% 60px;
             text-align: center;
             position: relative;
             z-index: 1;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 6px 14px;
-            background: rgba(0, 255, 170, 0.05);
-            border: 1px solid rgba(0, 255, 170, 0.2);
-            border-radius: 100px;
-            color: var(--accent);
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         h1 {
@@ -132,7 +113,6 @@
             margin: 0 auto 3rem;
         }
 
-        /* --- Terminal Console --- */
         .terminal {
             background: #000;
             border: 1px solid var(--border);
@@ -148,8 +128,7 @@
             background: #0d0d0d;
             padding: 12px 18px;
             border-bottom: 1px solid var(--border);
-            display: flex;
-            gap: 8px;
+            display: flex; gap: 8px;
         }
 
         .dot { width: 10px; height: 10px; border-radius: 50%; background: #333; }
@@ -164,7 +143,6 @@
         }
 
         .terminal-body code { color: var(--accent); }
-        .terminal-body span { color: #555; margin-right: 8px; }
 
         .copy-trigger {
             background: transparent;
@@ -172,41 +150,8 @@
             color: var(--text-dim);
             cursor: pointer;
             padding: 8px;
-            transition: 0.2s;
         }
 
-        .copy-trigger:hover { color: #fff; }
-
-        /* --- Status Preview --- */
-        .status-preview {
-            max-width: 700px;
-            margin: 0 auto 100px;
-            background: #000;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-        }
-
-        .status-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #111;
-        }
-
-        .status-indicator {
-            height: 8px;
-            width: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 10px;
-            background: var(--accent);
-            box-shadow: 0 0 8px var(--accent);
-        }
-
-        /* --- Grid --- */
         .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -218,34 +163,16 @@
             background: var(--card);
             padding: 2.5rem;
             border: 1px solid var(--border);
-            position: relative;
         }
 
-        .card h3 {
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        .card p {
-            font-size: 0.9rem;
-            color: var(--text-dim);
-        }
+        .card h3 { color: var(--accent); margin-bottom: 1rem; }
 
         footer {
-            padding: 80px 8% 40px;
+            padding: 40px 8%;
             border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             color: #444;
             font-size: 0.8rem;
-        }
-
-        @media (max-width: 768px) {
-            .nav-links { display: none; }
-            h1 { font-size: 2.8rem; }
+            text-align: center;
         }
     </style>
 </head>
@@ -254,69 +181,59 @@
     <div class="glow"></div>
 
     <nav>
-        <a href="#" class="logo">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+        <a href="index.html" class="logo">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3" fill="var(--accent)" />
+                <circle class="radar-circle" cx="12" cy="12" r="8" stroke="var(--accent)" fill="none" />
+                <circle cx="12" cy="12" r="10" stroke="var(--border)" fill="none" />
             </svg>
-            SENTINEX
+            NEURADER
         </a>
         <div class="nav-links">
             <a href="docs.html">Documentation</a>
             <a href="#">Github</a>
-            <a href="#">Releases</a>
         </div>
     </nav>
 
     <header class="hero">
-        <div class="badge">Stable Build v1.2.0</div>
-        <h1>Fleet Control <span>without the friction.</span></h1>
-        <p>A static-binary orchestration agent for high-speed infrastructure. Zero dependencies. Native performance.</p>
+        <h1>Detect. Deploy. <span>Dominate.</span></h1>
+        <p>A high-speed Go orchestrator that finds and manages your fleet with zero friction. NeuRader is a single-binary power tool for modern sysadmins.</p>
         
         <div class="terminal">
             <div class="terminal-header">
                 <div class="dot"></div><div class="dot"></div><div class="dot"></div>
             </div>
             <div class="terminal-body">
-                <code><span>$</span> curl -sSL sentinex.io/get | bash</code>
+                <code><span>$</span> curl -sSL neurader.io/get | bash</code>
                 <button class="copy-trigger" onclick="copyText()">
                     <i class="far fa-copy"></i>
                 </button>
             </div>
         </div>
-
-        <div class="status-preview">
-            <div style="color: #555; margin-bottom: 15px; text-align: left;">// Live Inventory Status</div>
-            <div class="status-row"><span><span class="status-indicator"></span>web-prod-01</span> <span style="color: var(--accent);">CONNECTED</span></div>
-            <div class="status-row"><span><span class="status-indicator"></span>web-prod-02</span> <span style="color: var(--accent);">CONNECTED</span></div>
-            <div class="status-row"><span><span class="status-indicator" style="background: #555; box-shadow: none;"></span>db-primary</span> <span style="color: #555;">PENDING ACCEPT</span></div>
-        </div>
     </header>
-
-    
 
     <section class="features">
         <div class="card">
-            <h3>Automated SSH Handshake</h3>
-            <p>Self-provisioning child nodes. Once you accept a node, Sentinex injects the master key and sets up permissions automatically.</p>
+            <h3>Intelligent Handshake</h3>
+            <p>Automated SSH key orchestration. Connect new nodes to your Jumpbox in under 5 seconds.</p>
         </div>
         <div class="card">
-            <h3>Distro Agnostic</h3>
-            <p>Runs as a single 15MB binary on Ubuntu, Debian, CentOS, or RHEL. No Python or Ruby runtime required.</p>
+            <h3>Static Performance</h3>
+            <p>Built with Go. No Python dependencies. Just a fast, reliable binary for any Linux distro.</p>
         </div>
         <div class="card">
-            <h3>Parallel Goroutines</h3>
-            <p>Execute scripts across your entire cluster in milliseconds. Real-time stdout/stderr streaming built into the core.</p>
+            <h3>Real-time Radar</h3>
+            <p>Simultaneous command execution with live-streaming output from every node in your fleet.</p>
         </div>
     </section>
 
     <footer>
-        <div>&copy; 2026 SENTINEX PROJECT</div>
-        <div>STABLE RELEASE: 09 FEB 2026</div>
+        &copy; 2026 NEURADER PROJECT | INFRASTRUCTURE INTUITION
     </footer>
 
     <script>
         function copyText() {
-            const cmd = "curl -sSL sentinex.io/get | bash";
+            const cmd = "curl -sSL neurader.io/get | bash";
             navigator.clipboard.writeText(cmd).then(() => {
                 const icon = document.querySelector('.copy-trigger i');
                 icon.className = "fas fa-check";
