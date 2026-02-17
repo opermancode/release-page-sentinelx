@@ -137,6 +137,7 @@
         <h4>Setup</h4>
         <a href="#install">Installation</a>
         <a href="#roles">Node Roles</a>
+        <a href="#manual">Manual (Zero-Port)</a>
     </div>
 
     <div class="nav-group">
@@ -157,12 +158,66 @@
         <p>NeuRader is a high-performance orchestration engine written in Go. It provides a secure, push-based model for managing infrastructure without the overhead of heavy runtimes like Python or Ruby.</p>
         
         <h2>Installation</h2>
-        <p>Run the universal installer to compile or place the binary and register the systemd service.</p>
-        <pre>curl -sSL https://get.neurader.io | sudo bash</pre>
+        <p>Run the universal installer to download the latest binary and register the systemd service.</p>
+        <pre>curl -L https://neurader.operman.in/releases/neurader-latest -o neurader && chmod +x neurader && sudo ./neurader install</pre>
     </section>
-
-    
 
     <section id="roles">
         <h2>Node Roles</h2>
-        <p>Initialize the <strong>NeuRader</strong>
+        <p>NeuRader operates in two distinct modes:</p>
+        <h3>1. Jumpbox (Manager)</h3>
+        <p>The control center. It holds the Master SSH keys and the inventory list. It pushes commands to child nodes via SSH.</p>
+        <h3>2. Child (Agent)</h3>
+        <p>The execution node. It runs the <code>neurader daemon</code> and waits for authorized commands from the Jumpbox.</p>
+    </section>
+
+    <section id="manual">
+        <h2>Manual Zero-Port Setup</h2>
+        <p>If your environment blocks ports <code>9090</code> and <code>9091</code>, you can bypass the automated handshake entirely.</p>
+        
+        <div class="info-card">
+            <span class="path-label">STEP 1: GET MASTER KEY</span>
+            <p>On the Jumpbox, copy the contents of the public key:</p>
+            <code>cat /etc/neurader/id_rsa.pub</code>
+        </div>
+
+        <div class="info-card">
+            <span class="path-label">STEP 2: PREPARE CHILD NODE</span>
+            <p>On the target machine, create the user and drop the key:</p>
+            <pre>sudo useradd -m -s /bin/bash neurader
+sudo mkdir -p /home/neurader/.ssh
+echo "PASTE_KEY_HERE" | sudo tee /home/neurader/.ssh/authorized_keys
+sudo chown -R neurader:neurader /home/neurader/.ssh
+sudo chmod 600 /home/neurader/.ssh/authorized_keys</pre>
+        </div>
+
+        <div class="info-card">
+            <span class="path-label">STEP 3: REGISTER ON JUMPBOX</span>
+            <p>Add the node to your inventory manually using the CLI:</p>
+            <code>sudo neurader add [Alias] [IP_Address]</code>
+        </div>
+    </section>
+
+    <section id="commands">
+        <h2>Running Commands</h2>
+        <p>Execute commands across multiple nodes in parallel:</p>
+        <pre>sudo neurader run web-server,db-server "uptime"</pre>
+        <p>Or list all connected hosts and their status:</p>
+        <pre>sudo neurader list</pre>
+    </section>
+
+    <section id="paths">
+        <h2>File Paths</h2>
+        <div class="info-card">
+            <span class="path-label">/etc/neurader/hosts.yml</span>
+            <p>The main inventory file storing node aliases and IP addresses.</p>
+        </div>
+        <div class="info-card">
+            <span class="path-label">/etc/neurader/id_rsa</span>
+            <p>The master private key used for orchestration. <strong>Never share this.</strong></p>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>
