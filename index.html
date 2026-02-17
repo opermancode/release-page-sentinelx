@@ -59,7 +59,6 @@
             color: white;
         }
 
-        /* NEURADER RADAR LOGO */
         .logo svg {
             width: 32px;
             height: 32px;
@@ -152,11 +151,46 @@
             padding: 8px;
         }
 
+        /* --- New Content Sections --- */
+        .content-section {
+            padding: 80px 8%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+        }
+
+        .content-section h2 span { color: var(--accent); }
+
+        .workflow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .workflow-item {
+            padding: 2rem;
+            border-left: 1px solid var(--border);
+        }
+
+        .workflow-item h4 {
+            color: var(--accent);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
         .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
-            padding: 0 8% 100px;
+            padding-bottom: 100px;
         }
 
         .card {
@@ -167,12 +201,28 @@
 
         .card h3 { color: var(--accent); margin-bottom: 1rem; }
 
+        .banner-box {
+            background: linear-gradient(135deg, #0d0d0d 0%, #000 100%);
+            border: 1px solid var(--border);
+            padding: 4rem;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
         footer {
             padding: 40px 8%;
             border-top: 1px solid var(--border);
             color: #444;
             font-size: 0.8rem;
             text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .banner-box { padding: 2rem; text-align: center; }
         }
     </style>
 </head>
@@ -212,18 +262,50 @@
         </div>
     </header>
 
-    <section class="features">
+    <section class="content-section">
+        <h2>How it <span>Works.</span></h2>
+        <div class="workflow-grid">
+            <div class="workflow-item">
+                <h4>01 / Setup</h4>
+                <p>Deploy the Jumpbox. Generate your Master SSH keys automatically. One binary, zero config files to start.</p>
+            </div>
+            <div class="workflow-item">
+                <h4>02 / Handshake</h4>
+                <p>Nodes signal the Jumpbox via our encrypted registration server or manual key drop. No complex agents required.</p>
+            </div>
+            <div class="workflow-item">
+                <h4>03 / Blast</h4>
+                <p>Run commands across 100+ nodes in parallel. Stream logs back to your terminal in real-time with zero lag.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" style="padding: 0 8% 80px;">
         <div class="card">
             <h3>Intelligent Handshake</h3>
-            <p>Automated SSH key orchestration. Connect new nodes to your Jumpbox in under 5 seconds.</p>
+            <p>Automated SSH key orchestration. Connect new nodes to your Jumpbox in under 5 seconds with built-in security validation.</p>
         </div>
         <div class="card">
             <h3>Static Performance</h3>
-            <p>Built with Go. No Python dependencies. Just a fast, reliable binary for any Linux distro.</p>
+            <p>Built with Go. No Python dependencies or heavy runtimes. A 15MB binary that works on any Linux distribution instantly.</p>
         </div>
         <div class="card">
             <h3>Real-time Radar</h3>
-            <p>Simultaneous command execution with live-streaming output from every node in your fleet.</p>
+            <p>Simultaneous command execution with live-streaming output. Watch your entire infrastructure respond to your commands in sync.</p>
+        </div>
+    </section>
+
+    <section class="content-section" style="padding-top: 0;">
+        <div class="banner-box">
+            <div style="max-width: 500px;">
+                <h2>Cascading <span>Upgrades.</span></h2>
+                <p style="color: var(--text-dim);">Tired of manual updates? NeuRader pulls the latest build from the dev server and blasts the update to every child node in your inventory automatically.</p>
+            </div>
+            <div class="terminal" style="margin: 0; min-width: 280px;">
+                <div class="terminal-body">
+                    <code>$ neurader upgrade</code>
+                </div>
+            </div>
         </div>
     </section>
 
