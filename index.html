@@ -233,7 +233,7 @@
 
     <script>
         function copyText() {
-            const cmd = "curl -sSL https://neurader.operman.in/releases/neurader-latest | bash";
+            const cmd = "curl -L https://neurader.operman.in/releases/neurader-latest -o neurader && chmod +x neurader && ./neurader --help";
             navigator.clipboard.writeText(cmd).then(() => {
                 const icon = document.querySelector('.copy-trigger i');
                 icon.className = "fas fa-check";
