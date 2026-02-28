@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NeuRader | Ansible Execution Monitor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Barlow:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
 :root {
@@ -24,7 +24,7 @@
   --red: #ff4d4d;
   --green: #00ffaa;
   --mono: 'JetBrains Mono', monospace;
-  --sans: 'Barlow', sans-serif;
+  --sans: 'DM Sans', sans-serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -37,7 +37,7 @@ body {
   color: var(--text);
   overflow-x: hidden;
   line-height: 1.6;
-  font-weight: 500;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -207,7 +207,7 @@ nav {
 .hero h1 {
   font-size: clamp(3rem, 9vw, 6.5rem);
   font-weight: 800;
-  letter-spacing: -3px;
+  letter-spacing: -2px;
   line-height: 1;
   margin-bottom: 1.8rem;
   position: relative;
@@ -236,7 +236,7 @@ nav {
   color: var(--text-mid);
   max-width: 580px;
   margin: 0 auto 3rem;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.7;
 }
 
@@ -363,7 +363,7 @@ nav {
 .section-title {
   font-size: clamp(2rem, 5vw, 3.2rem);
   font-weight: 800;
-  letter-spacing: -1.5px;
+  letter-spacing: -0.5px;
   margin-bottom: 1rem;
   line-height: 1.1;
 }
@@ -376,7 +376,7 @@ nav {
   font-size: 1rem;
   line-height: 1.7;
   margin-bottom: 3.5rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 /* ── Flow steps ── */
@@ -439,7 +439,7 @@ nav {
   font-size: 0.85rem;
   color: var(--text-mid);
   line-height: 1.6;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 /* ══════════════════════════════════
@@ -535,7 +535,7 @@ nav {
   font-size: 0.83rem; font-weight: 500;
   color: var(--text-mid);
   line-height: 1.6;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 /* ══════════════════════════════════
@@ -599,10 +599,10 @@ nav {
 }
 
 .feat-card p {
-  font-size: 0.83rem;
+  font-size: 0.84rem;
   color: var(--text-mid);
   line-height: 1.65;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 /* ══════════════════════════════════
@@ -801,7 +801,7 @@ nav {
 .cta-band h2 {
   font-size: clamp(1.8rem, 4vw, 2.8rem);
   font-weight: 800;
-  letter-spacing: -1.5px;
+  letter-spacing: -0.5px;
   margin-bottom: 0.8rem;
   line-height: 1.1;
 }
@@ -967,7 +967,7 @@ footer {
     </div>
     <div class="term-body">
       <code>
-        <span class="prompt">$ </span>curl -L https://neurader.operman.in/releases/neurader-latest -o neurader &amp;&amp; chmod +x neurader &amp;&amp; ./neurader --help
+        <span class="prompt">$ </span>curl -L https://neurader.operman.in/releases/latest/neurader-linux-amd64 -o neurader &amp;&amp; chmod +x neurader &amp;&amp; sudo ./neurader init
       </code>
       <button class="copy-btn" onclick="copyInstall(this)" title="Copy command">
         <i class="far fa-copy"></i>
@@ -976,7 +976,7 @@ footer {
   </div>
 
   <div class="hero-note fade-up delay-4">
-    <span><i class="fas fa-check-circle"></i> No root required to run</span>
+    <span><i class="fas fa-check-circle"></i> Root required for init only</span>
     <span><i class="fas fa-check-circle"></i> 15MB static binary</span>
     <span><i class="fas fa-check-circle"></i> x86_64 · ARM64 · ARM32</span>
     <span><i class="fas fa-check-circle"></i> All major Linux distros</span>
@@ -1020,7 +1020,7 @@ footer {
     <div class="flow-step">
       <div class="flow-num">06</div>
       <h4>Grafana Dashboard</h4>
-      <p>Optionally push results to Grafana. NeuRader creates the datasource and imports a pre-built dashboard automatically.</p>
+      <p>Optionally connect Grafana. Every subsequent run syncs automatically — NeuRader creates the datasource, imports the dashboard, and pushes each run in the background.</p>
     </div>
   </div>
 </section>
@@ -1140,8 +1140,8 @@ footer {
     </div>
     <div class="cmd-card">
       <div class="cmd-line"><span class="cmd-prompt">$</span> neurader push</div>
-      <h4>Push to Grafana</h4>
-      <p>Push all logs to your Grafana instance as annotations. Works with Grafana hosted anywhere — bare metal, Docker, Kubernetes.</p>
+      <h4>Backfill to Grafana</h4>
+      <p>Push all existing logs to Grafana. Only needed once when you first connect Grafana — after that every run syncs automatically in the background.</p>
     </div>
     <div class="cmd-card">
       <div class="cmd-line"><span class="cmd-prompt">$</span> neurader grafana-setup</div>
@@ -1158,6 +1158,11 @@ footer {
       <h4>Clean Removal</h4>
       <p>Removes the callback plugin, reverts ansible.cfg, disables the cleanup timer, and removes all config and log files. Leaves no trace.</p>
     </div>
+    <div class="cmd-card">
+      <div class="cmd-line"><span class="cmd-prompt">$</span> neurader reset-callback</div>
+      <h4>Restore Default Plugin</h4>
+      <p>Overwrites the installed callback plugin with the default version embedded in the binary. Use this after customising the log format and wanting to revert.</p>
+    </div>
   </div>
 </section>
 
@@ -1169,7 +1174,7 @@ footer {
     <div>
       <div class="section-label">Grafana Integration</div>
       <h2 class="section-title">Green or red.<br><span>Click to drill down.</span></h2>
-      <p class="section-desc" style="margin-bottom:2rem;">NeuRader creates a datasource and imports a pre-built dashboard into your Grafana instance — wherever it runs. Select any past playbook run and immediately see which hosts succeeded and which failed.</p>
+      <p class="section-desc" style="margin-bottom:2rem;">NeuRader creates a datasource and imports a pre-built dashboard into your Grafana instance. Every playbook run is pushed to Grafana automatically — no manual steps. Open your dashboard and the latest run is already there.</p>
 
       <div style="display:flex;flex-direction:column;gap:1rem;">
         <div style="display:flex;align-items:center;gap:12px;font-size:0.82rem;">
@@ -1191,6 +1196,10 @@ footer {
         <div style="display:flex;align-items:center;gap:12px;font-size:0.82rem;">
           <i class="fas fa-circle-check" style="color:var(--accent);width:16px"></i>
           Dashboard and datasource created automatically by <code style="color:var(--accent)">neurader grafana-setup</code>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:0.82rem;">
+          <i class="fas fa-circle-check" style="color:var(--accent);width:16px"></i>
+          Every playbook run syncs to Grafana automatically — no manual push needed
         </div>
       </div>
     </div>
@@ -1252,6 +1261,81 @@ footer {
   <div class="section-label">Platform Support</div>
   <h2 class="section-title">Runs everywhere<br><span>Ansible runs.</span></h2>
   <p class="section-desc">A single statically linked Go binary with zero dependencies. Supports every architecture and every major Linux distribution out of the box.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin-bottom:3rem;">
+    <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
+      <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">x86_64 · Intel / AMD</div>
+      <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;word-break:break-all;">neurader-linux-amd64</div>
+      <a href="https://neurader.operman.in/releases/latest/neurader-linux-amd64"
+         style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:all 0.2s;"
+         onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">
+        <i class="fas fa-download"></i> Download
+      </a>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
+      <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">ARM64 · Graviton / Pi 4+</div>
+      <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;word-break:break-all;">neurader-linux-arm64</div>
+      <a href="https://neurader.operman.in/releases/latest/neurader-linux-arm64"
+         style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:all 0.2s;"
+         onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">
+        <i class="fas fa-download"></i> Download
+      </a>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
+      <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">ARM32 · Pi 2/3 / Embedded</div>
+      <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;word-break:break-all;">neurader-linux-arm</div>
+      <a href="https://neurader.operman.in/releases/latest/neurader-linux-arm"
+         style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:all 0.2s;"
+         onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">
+        <i class="fas fa-download"></i> Download
+      </a>
+    </div>
+  </div>
+
+  <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);margin-bottom:3rem;display:flex;align-items:center;gap:10px;">
+    <i class="fas fa-shield-halved" style="color:var(--accent)"></i>
+    Verify integrity:
+    <a href="https://neurader.operman.in/releases/latest/checksums.sha256"
+       style="color:var(--accent);text-decoration:none;">checksums.sha256</a>
+    &nbsp;·&nbsp; Always points to the latest release
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin-bottom:3rem;">
+    <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
+      <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">x86_64 · Intel / AMD</div>
+      <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;">neurader-linux-amd64</div>
+      <a href="https://neurader.operman.in/releases/latest/neurader-linux-amd64"
+         style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:background 0.2s;"
+         onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">
+        <i class="fas fa-download"></i> Download
+      </a>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
+      <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">ARM64 · Graviton / Pi 4+</div>
+      <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;">neurader-linux-arm64</div>
+      <a href="https://neurader.operman.in/releases/latest/neurader-linux-arm64"
+         style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:background 0.2s;"
+         onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">
+        <i class="fas fa-download"></i> Download
+      </a>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
+      <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">ARM32 · Pi 2/3 · Embedded</div>
+      <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;">neurader-linux-arm</div>
+      <a href="https://neurader.operman.in/releases/latest/neurader-linux-arm"
+         style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:background 0.2s;"
+         onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">
+        <i class="fas fa-download"></i> Download
+      </a>
+    </div>
+  </div>
+
+  <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);margin-bottom:3rem;display:flex;align-items:center;gap:10px;">
+    <i class="fas fa-shield-halved" style="color:var(--accent)"></i>
+    Verify integrity:
+    <a href="https://neurader.operman.in/releases/latest/checksums.sha256" style="color:var(--accent);text-decoration:none;">checksums.sha256</a>
+    &nbsp;·&nbsp; Always points to the latest release
+  </div>
 
   <div class="arch-row">
     <div class="arch-pill"><i class="fas fa-microchip"></i> x86_64 (amd64)</div>
@@ -1342,14 +1426,14 @@ footer {
   </div>
   <div class="cta-term">
     <div class="cta-term-body">
-      <span class="dim"># download</span>
-      <span>curl -L https://neurader.operman.in/<br>&nbsp;&nbsp;releases/neurader-latest \</span>
+      <span class="dim"># download (amd64)</span>
+      <span>curl -L https://neurader.operman.in/<br>&nbsp;&nbsp;releases/latest/neurader-linux-amd64 \</span>
       <span>&nbsp;&nbsp;-o neurader</span>
       <span class="dim">&nbsp;</span>
       <span class="dim"># make executable</span>
       <span>chmod +x neurader</span>
       <span class="dim">&nbsp;</span>
-      <span class="dim"># initialise</span>
+      <span class="dim"># setup wizard (run once)</span>
       <span>sudo ./neurader init</span>
     </div>
   </div>
@@ -1370,7 +1454,7 @@ footer {
 
 <script>
 function copyInstall(btn) {
-  const cmd = "curl -L https://neurader.operman.in/releases/neurader-latest -o neurader && chmod +x neurader && ./neurader --help";
+  const cmd = "curl -L https://neurader.operman.in/releases/latest/neurader-linux-amd64 -o neurader && chmod +x neurader && sudo ./neurader init";
   navigator.clipboard.writeText(cmd).then(() => {
     const icon = btn.querySelector('i');
     icon.className = "fas fa-check";
