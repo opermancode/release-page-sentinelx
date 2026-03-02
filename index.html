@@ -42,6 +42,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
 /* ── Noise texture overlay ── */
 body::before {
   content: '';
@@ -65,6 +70,7 @@ body::before {
   z-index: 0;
 }
 
+/* ── Top glow ── */
 .hero-glow {
   position: absolute;
   top: -200px;
@@ -104,7 +110,13 @@ nav {
   letter-spacing: 3px;
 }
 
-.logo-icon { width: 34px; height: 34px; position: relative; flex-shrink: 0; }
+.logo-icon {
+  width: 34px;
+  height: 34px;
+  position: relative;
+  flex-shrink: 0;
+}
+
 .logo-icon svg { width: 100%; height: 100%; }
 
 .radar-ring {
@@ -119,7 +131,12 @@ nav {
   100% { r: 11; opacity: 0; }
 }
 
-.nav-right { display: flex; align-items: center; gap: 2.5rem; }
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
 .nav-right a {
   color: #aaa;
   text-decoration: none;
@@ -139,11 +156,12 @@ nav {
   font-weight: 700;
   padding: 4px 12px;
   border-radius: 2px;
+  letter-spacing: 1px;
   font-family: var(--mono);
 }
 
 /* ══════════════════════════════════
-   HERO & TYPEWRITER 
+   HERO & TYPEWRITER STYLES
 ══════════════════════════════════ */
 .hero {
   min-height: 100vh;
@@ -156,7 +174,7 @@ nav {
   text-align: center;
 }
 
-/* Eyebrow CSS Typewriter */
+/* Eyebrow Typewriter (CSS) */
 .hero-eyebrow {
   display: inline-flex;
   align-items: center;
@@ -171,32 +189,32 @@ nav {
   border: 1px solid rgba(0,255,170,0.2);
   border-radius: 2px;
   background: var(--accent-dim);
+  
   white-space: nowrap;
   overflow: hidden;
-  width: 0;
   border-right: 2px solid var(--accent);
+  width: 0;
   animation: 
-    type-eyebrow 2s steps(26, end) forwards,
+    typing-eyebrow 2.5s steps(26, end) forwards,
     blink-caret 0.75s step-end infinite;
   animation-delay: 0.5s;
 }
 
 .hero-eyebrow::before {
-  content: ''; width: 6px; height: 6px;
-  background: var(--accent); border-radius: 50%;
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
 }
 
-@keyframes type-eyebrow { from { width: 0 } to { width: 310px } }
-@keyframes blink-caret { 50% { border-color: transparent; } }
-
-/* Headline Styling */
+/* Headline Typewriter (JS Target) */
 .hero h1 {
-  font-size: clamp(2.5rem, 8vw, 5.5rem);
+  font-size: clamp(3rem, 9vw, 6.5rem);
   font-weight: 800;
   letter-spacing: -2px;
   line-height: 1.1;
   margin-bottom: 1.8rem;
-  min-height: 2.2em; /* Prevents layout jumping while typing */
+  min-height: 2.2em; /* Prevents layout jump */
 }
 
 .hero h1 em {
@@ -206,7 +224,6 @@ nav {
   display: inline-block;
 }
 
-/* Underline for the italic part */
 .hero h1 em::after {
   content: '';
   position: absolute;
@@ -218,23 +235,25 @@ nav {
   border-radius: 2px;
 }
 
-/* Cursor for H1 */
+/* Terminal-style Cursor for H1 */
 .main-cursor {
   display: inline-block;
-  width: 10px;
-  height: 0.9em;
+  width: 12px;
+  height: 1em;
   background: var(--accent);
-  margin-left: 10px;
+  margin-left: 8px;
   vertical-align: middle;
-  animation: blink-main 0.75s step-end infinite;
+  animation: blink-caret 0.75s step-end infinite;
 }
 
-@keyframes blink-main { 50% { opacity: 0; } }
+@keyframes typing-eyebrow {
+  from { width: 0 }
+  to { width: 310px; }
+}
 
-.hero-sub, .install-terminal, .hero-note {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+@keyframes blink-caret {
+  from, to { opacity: 1; border-color: var(--accent); background: var(--accent); }
+  50% { opacity: 0; border-color: transparent; background: transparent; }
 }
 
 .hero-sub {
@@ -242,6 +261,9 @@ nav {
   color: var(--text-mid);
   max-width: 580px;
   margin: 0 auto 3rem;
+  font-weight: 500;
+  line-height: 1.7;
+  opacity: 0; /* Animated via JS after typing */
 }
 
 /* Install command terminal */
@@ -253,7 +275,7 @@ nav {
   width: 100%;
   margin: 0 auto 1.5rem;
   overflow: hidden;
-  box-shadow: 0 0 60px rgba(0,0,0,0.9);
+  box-shadow: 0 0 60px rgba(0,0,0,0.9), 0 0 1px var(--accent-dim);
   position: relative;
   z-index: 1;
 }
@@ -272,18 +294,32 @@ nav {
 .term-dot.y { background: #ffbd2e; }
 .term-dot.g { background: #28ca41; }
 
+.term-title {
+  margin-left: auto;
+  margin-right: auto;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
 .term-body {
   padding: 20px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
 }
 
 .term-body code {
   font-family: var(--mono);
-  font-size: 0.85rem;
+  font-size: 0.83rem; font-weight: 500;
   color: var(--accent);
+  word-break: break-all;
+  line-height: 1.7;
 }
+
+.term-body code .prompt { color: var(--text-dim); }
 
 .copy-btn {
   background: transparent;
@@ -292,9 +328,10 @@ nav {
   cursor: pointer;
   padding: 8px 10px;
   border-radius: 4px;
-  transition: 0.2s;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  font-size: 0.8rem;
 }
-
 .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
 
 .hero-note {
@@ -302,10 +339,24 @@ nav {
   font-size: 0.72rem;
   color: #aaa;
   display: flex;
-  gap: 20px;
+  align-items: center;
+  gap: 16px;
+  justify-content: center;
+  font-weight: 500;
+  opacity: 0;
 }
 
-.reveal { opacity: 1 !important; transform: translateY(0) !important; }
+.hero-note span { display: flex; align-items: center; gap: 6px; }
+.hero-note i { color: var(--accent); font-size: 0.65rem; }
+
+@keyframes fadeIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in-ready {
+  animation: fadeIn 0.8s ease forwards;
+  transform: translateY(10px);
+}
 
 </style>
 </head>
@@ -320,14 +371,16 @@ nav {
         <circle cx="12" cy="12" r="2.5" fill="#00ffaa"/>
         <circle class="radar-ring" cx="12" cy="12" r="6" stroke="#00ffaa" stroke-width="1.5" fill="none"/>
         <circle class="radar-ring" cx="12" cy="12" r="6" stroke="#00ffaa" stroke-width="1.5" fill="none"/>
+        <circle class="radar-ring" cx="12" cy="12" r="6" stroke="#00ffaa" stroke-width="1.5" fill="none"/>
         <circle cx="12" cy="12" r="10" stroke="#1a1a1a" stroke-width="1" fill="none"/>
       </svg>
     </div>
     NEURADER
   </a>
   <div class="nav-right">
-    <a href="#">How It Works</a>
-    <a href="#">Commands</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="#commands">Commands</a>
+    <a href="#grafana">Grafana</a>
     <a href="#">GitHub</a>
     <span class="nav-badge">v1.0</span>
   </div>
@@ -342,78 +395,113 @@ nav {
 
   <h1 id="typewriter-h1"></h1>
 
-  <p class="hero-sub" id="subtext">
+  <p class="hero-sub" id="hero-sub">
     NeuRader hooks into your Ansible controller and captures every playbook execution — which nodes ran, which succeeded, which failed, and exactly why. Zero ports. Zero daemons. One binary.
   </p>
 
-  <div class="install-terminal" id="terminal">
+  <div class="install-terminal" id="terminal" style="opacity:0">
     <div class="term-bar">
-      <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+      <div class="term-dot r"></div>
+      <div class="term-dot y"></div>
+      <div class="term-dot g"></div>
+      <span class="term-title">install</span>
     </div>
     <div class="term-body">
-      <code><span style="color:var(--text-dim)">$</span> curl -L neurader.operman.in/install.sh | sh</code>
-      <button class="copy-btn" onclick="copyInstall(this)"><i class="far fa-copy"></i></button>
+      <code>
+        <span class="prompt">$ </span>curl -L https://neurader.operman.in/releases/latest/neurader-linux-amd64 -o neurader && chmod +x neurader && sudo ./neurader init
+      </code>
+      <button class="copy-btn" onclick="copyInstall(this)" title="Copy command">
+        <i class="far fa-copy"></i>
+      </button>
     </div>
   </div>
 
-  <div class="hero-note" id="notes">
-    <span><i class="fas fa-check-circle" style="color:var(--accent)"></i> 15MB Static Binary</span>
-    <span><i class="fas fa-check-circle" style="color:var(--accent)"></i> x86_64 / ARM64</span>
+  <div class="hero-note" id="hero-note">
+    <span><i class="fas fa-check-circle"></i> Root required for init only</span>
+    <span><i class="fas fa-check-circle"></i> 15MB static binary</span>
+    <span><i class="fas fa-check-circle"></i> x86_64 · ARM64 · ARM32</span>
+    <span><i class="fas fa-check-circle"></i> All major Linux distros</span>
   </div>
 </section>
 
 <script>
-const h1 = document.getElementById('typewriter-h1');
-const subtext = document.getElementById('subtext');
-const terminal = document.getElementById('terminal');
-const notes = document.getElementById('notes');
+// --- TYPEWRITER CONFIG ---
+const h1Content = [
+  { text: "Every playbook run.", type: "normal" },
+  { text: "\n", type: "break" },
+  { text: "Fully visible.", type: "italic" }
+];
 
-// Configuration for typing
-const line1 = "Every playbook run.";
-const line2 = "Fully visible.";
-let charIndex = 0;
-let isLine2 = false;
+const h1Container = document.getElementById('typewriter-h1');
+let currentPart = 0;
+let currentChar = 0;
 
-function typeHeadline() {
-  if (!isLine2) {
-    // Typing Line 1
-    if (charIndex < line1.length) {
-      h1.innerHTML = line1.substring(0, charIndex + 1) + '<span class="main-cursor"></span>';
-      charIndex++;
-      setTimeout(typeHeadline, 60);
+function typeH1() {
+  if (currentPart < h1Content.length) {
+    const part = h1Content[currentPart];
+    
+    if (part.type === "break") {
+      h1Container.innerHTML += "<br>";
+      currentPart++;
+      setTimeout(typeH1, 200);
     } else {
-      // Line 1 finished, move to Line 2
-      h1.innerHTML = line1 + '<br><span class="main-cursor"></span>';
-      charIndex = 0;
-      isLine2 = true;
-      setTimeout(typeHeadline, 400); // Pause before line 2
+      // Create or get target element for this part
+      let target;
+      if (part.type === "italic") {
+        target = h1Container.querySelector('em');
+        if (!target) {
+          target = document.createElement('em');
+          h1Container.appendChild(target);
+        }
+      } else {
+        target = h1Container;
+      }
+
+      // Type the character
+      if (currentChar < part.text.length) {
+        // Append text node to avoid overwriting the <em> tag
+        if (part.type === "italic") {
+           target.textContent += part.text.charAt(currentChar);
+        } else {
+           // Insert before the <em> if it exists, or at end
+           const em = h1Container.querySelector('em');
+           if (em) {
+             h1Container.insertBefore(document.createTextNode(part.text.charAt(currentChar)), em);
+           } else {
+             h1Container.appendChild(document.createTextNode(part.text.charAt(currentChar)));
+           }
+        }
+        currentChar++;
+        setTimeout(typeH1, 60); 
+      } else {
+        currentPart++;
+        currentChar = 0;
+        setTimeout(typeH1, 100);
+      }
     }
   } else {
-    // Typing Line 2 inside <em>
-    if (charIndex < line2.length) {
-      h1.innerHTML = line1 + '<br><em>' + line2.substring(0, charIndex + 1) + '</em><span class="main-cursor"></span>';
-      charIndex++;
-      setTimeout(typeHeadline, 80);
-    } else {
-      // Done Typing! Reveal the rest
-      document.querySelector('.main-cursor').style.display = 'inline-block';
-      subtext.classList.add('reveal');
-      setTimeout(() => terminal.classList.add('reveal'), 200);
-      setTimeout(() => notes.classList.add('reveal'), 400);
-    }
+    // Finished typing: remove cursor and fade in the rest
+    h1Container.innerHTML += '<span class="main-cursor"></span>';
+    document.getElementById('hero-sub').classList.add('fade-in-ready');
+    setTimeout(() => {
+      document.getElementById('terminal').classList.add('fade-in-ready');
+      document.getElementById('hero-note').classList.add('fade-in-ready');
+    }, 400);
   }
 }
 
-// Start typing after eyebrow animation finishes
-window.addEventListener('load', () => {
-  setTimeout(typeHeadline, 2500); 
-});
+// Start sequence
+window.onload = () => {
+  setTimeout(typeH1, 1800); // Wait for eyebrow to finish first
+};
 
 function copyInstall(btn) {
-  const code = "curl -L neurader.operman.in/install.sh | sh";
+  const code = btn.previousElementSibling.innerText.replace('$ ', '');
   navigator.clipboard.writeText(code);
   btn.innerHTML = '<i class="fas fa-check" style="color:var(--accent)"></i>';
-  setTimeout(() => { btn.innerHTML = '<i class="far fa-copy"></i>'; }, 2000);
+  setTimeout(() => {
+    btn.innerHTML = '<i class="far fa-copy"></i>';
+  }, 2000);
 }
 </script>
 
