@@ -971,42 +971,44 @@ footer {
 <section class="hero">
   <div class="hero-glow"></div>
 
-  <div class="hero-eyebrow fade-up">Ansible Execution Monitor</div>
-
   <div id="plane-viewer-root" class="fade-up delay-1"></div>
 
-  <h1 class="fade-up delay-2">
-    Every playbook run.<br>
-    <em>Fully visible.</em>
-  </h1>
+  <div class="hero-content">
+    <div class="hero-eyebrow fade-up">Ansible Execution Monitor</div>
 
-  <p class="hero-sub fade-up delay-3">
-    NeuRader hooks into your Ansible controller and captures every playbook execution — which nodes ran, which succeeded, which failed, and exactly why. Zero ports. Zero daemons. One binary.
-  </p>
+    <h1 class="fade-up delay-2">
+      Every playbook run.<br>
+      <em>Fully visible.</em>
+    </h1>
 
-  <div class="install-terminal fade-up delay-4">
-    <div class="term-bar">
-      <div class="term-dot r"></div>
-      <div class="term-dot y"></div>
-      <div class="term-dot g"></div>
-      <span class="term-title">install</span>
-      <div class="scan-line"></div>
+    <p class="hero-sub fade-up delay-3">
+      NeuRader hooks into your Ansible controller and captures every playbook execution — which nodes ran, which succeeded, which failed, and exactly why. Zero ports. Zero daemons. One binary.
+    </p>
+
+    <div class="install-terminal fade-up delay-4">
+      <div class="term-bar">
+        <div class="term-dot r"></div>
+        <div class="term-dot y"></div>
+        <div class="term-dot g"></div>
+        <span class="term-title">install</span>
+        <div class="scan-line"></div>
+      </div>
+      <div class="term-body">
+        <code>
+          <span class="prompt">$ </span>sudo curl -L https://neurader.operman.in/neurader/releases/latest/neurader-linux-amd64 -o neurader &amp;&amp; sudo chmod +x neurader &amp;&amp; sudo ./neurader init
+        </code>
+        <button class="copy-btn" onclick="copyInstall(this)" title="Copy command">
+          <i class="far fa-copy"></i>
+        </button>
+      </div>
     </div>
-    <div class="term-body">
-      <code>
-        <span class="prompt">$ </span>sudo curl -L https://neurader.operman.in/neurader/releases/latest/neurader-linux-amd64 -o neurader &amp;&amp; sudo chmod +x neurader &amp;&amp; sudo ./neurader init
-      </code>
-      <button class="copy-btn" onclick="copyInstall(this)" title="Copy command">
-        <i class="far fa-copy"></i>
-      </button>
-    </div>
-  </div>
 
-  <div class="hero-note fade-up delay-5">
-    <span><i class="fas fa-check-circle"></i> Root required for init only</span>
-    <span><i class="fas fa-check-circle"></i> 15MB static binary</span>
-    <span><i class="fas fa-check-circle"></i> x86_64 · ARM64 · ARM32</span>
-    <span><i class="fas fa-check-circle"></i> All major Linux distros</span>
+    <div class="hero-note fade-up delay-5">
+      <span><i class="fas fa-check-circle"></i> Root required for init only</span>
+      <span><i class="fas fa-check-circle"></i> 15MB static binary</span>
+      <span><i class="fas fa-check-circle"></i> x86_64 · ARM64 · ARM32</span>
+      <span><i class="fas fa-check-circle"></i> All major Linux distros</span>
+    </div>
   </div>
 </section>
 
