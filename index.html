@@ -165,29 +165,42 @@ nav {
 /* ══════════════════════════════════
    HERO & 3D VIEWER
 ══════════════════════════════════ */
+/* Update the main Hero container */
 .hero {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  display: grid; /* Changed from flex */
+  grid-template-columns: 1fr 1fr; /* Split into two equal columns */
   align-items: center;
-  justify-content: center;
+  gap: 2rem;
   padding: 120px 6% 80px;
   position: relative;
-  text-align: center;
+  text-align: left; /* Changed from center to align text left within its column */
 }
 
+/* Ensure the 3D viewer takes up its container */
 #plane-viewer-root {
   width: 100%;
-  max-width: 800px;
-  height: 400px;
-  margin-top: -20px;
-  margin-bottom: -20px;
+  height: 500px; /* Increased height for better visibility */
   position: relative;
   z-index: 2;
   cursor: grab;
 }
 
-#plane-viewer-root:active { cursor: grabbing; }
+/* Mobile Responsiveness: Stack them back to top/bottom on small screens */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding-top: 100px;
+  }
+  #plane-viewer-root {
+    height: 300px;
+    order: 1; /* Model on top */
+  }
+  .hero-content {
+    order: 2; /* Text below */
+  }
+}
 
 .hero-eyebrow {
   display: inline-flex;
