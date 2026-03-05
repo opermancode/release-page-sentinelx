@@ -1,14 +1,1552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuRader | Ansible Execution Monitor</title>
+<link rel="icon" type="image/png" href="neurader.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-  .hero {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-  }
-</style>
+:root {
+  --bg: #050505;
+  --bg2: #080808;
+  --accent: #00ffaa;
+  --accent2: #00cc88;
+  --accent-dim: rgba(0,255,170,0.12);
+  --accent-glow: rgba(0,255,170,0.06);
+  --card: #0a0a0a;
+  --border: #161616;
+  --border2: #1e1e1e;
+  --text: #ffffff;
+  --text-dim: #888;
+  --text-mid: #c0c0c0;
+  --red: #ff4d4d;
+  --green: #00ffaa;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+}
 
-<div class="hero">
-  <div class="left">
-    <h2>Every playbook run. Fully visible.</h2>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  line-height: 1.6;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ── Noise texture overlay ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
+
+/* ── Grid background ── */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,255,170,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,170,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Top glow ── */
+.hero-glow {
+  position: absolute;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 700px;
+  background: radial-gradient(ellipse at 50% 30%, rgba(0,255,170,0.08) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ══════════════════════════════════
+   NAV
+══════════════════════════════════ */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.4rem 6%;
+  background: rgba(5,5,5,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 3px;
+}
+
+.logo-icon {
+  width: 34px;
+  height: 34px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.logo-icon svg {
+  width: 100%; height: 100%;
+}
+
+.radar-ring {
+  transform-origin: 12px 12px;
+  animation: radar-out 2.4s ease-out infinite;
+}
+.radar-ring:nth-child(2) { animation-delay: 0.8s; }
+.radar-ring:nth-child(3) { animation-delay: 1.6s; }
+
+@keyframes radar-out {
+  0%   { r: 3; opacity: 0.8; }
+  100% { r: 11; opacity: 0; }
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.nav-right a {
+  color: #aaa;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.nav-right a:hover { color: var(--accent); }
+
+.nav-badge {
+  background: var(--accent-dim);
+  border: 1px solid rgba(0,255,170,0.2);
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 2px;
+  letter-spacing: 1px;
+  font-family: var(--mono);
+}
+
+/* ══════════════════════════════════
+   HERO & 3D VIEWER
+══════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 6% 80px;
+  position: relative;
+  text-align: center;
+}
+
+#plane-viewer-root {
+  width: 100%;
+  max-width: 800px;
+  height: 400px;
+  margin-top: -20px;
+  margin-bottom: -20px;
+  position: relative;
+  z-index: 2;
+  cursor: grab;
+}
+
+#plane-viewer-root:active { cursor: grabbing; }
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--accent);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  padding: 6px 16px;
+  border: 1px solid rgba(0,255,170,0.2);
+  border-radius: 2px;
+  background: var(--accent-dim);
+}
+
+.hero-eyebrow::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: blink 1.2s step-end infinite;
+}
+
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.hero h1 {
+  font-size: clamp(3rem, 9vw, 6.5rem);
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin-bottom: 1.8rem;
+  position: relative;
+  z-index: 1;
+}
+
+.hero h1 em {
+  font-style: normal;
+  color: var(--accent);
+  position: relative;
+}
+
+.hero h1 em::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 0; right: 0;
+  height: 3px;
+  background: var(--accent);
+  opacity: 0.4;
+  border-radius: 2px;
+}
+
+.hero-sub {
+  font-size: 1.15rem;
+  color: var(--text-mid);
+  max-width: 580px;
+  margin: 0 auto 3rem;
+  font-weight: 500;
+  line-height: 1.7;
+}
+
+/* Install command terminal */
+.install-terminal {
+  background: #000;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(0,0,0,0.9), 0 0 1px var(--accent-dim);
+  position: relative;
+  z-index: 1;
+}
+
+.term-bar {
+  background: #0d0d0d;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.term-dot { width: 10px; height: 10px; border-radius: 50%; }
+.term-dot.r { background: #ff5f57; }
+.term-dot.y { background: #ffbd2e; }
+.term-dot.g { background: #28ca41; }
+
+.term-title {
+  margin-left: auto;
+  margin-right: auto;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+.term-body {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.term-body code {
+  font-family: var(--mono);
+  font-size: 0.83rem; font-weight: 500;
+  color: var(--accent);
+  word-break: break-all;
+  line-height: 1.7;
+}
+
+.term-body code .prompt { color: var(--text-dim); }
+
+.copy-btn {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  font-size: 0.8rem;
+}
+.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.hero-note {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: #aaa;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: center;
+  font-weight: 500;
+}
+
+.hero-note span { display: flex; align-items: center; gap: 6px; }
+.hero-note i { color: var(--accent); font-size: 0.65rem; }
+
+/* ══════════════════════════════════
+   SECTION DIVIDER
+══════════════════════════════════ */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border2), transparent);
+  margin: 0 6%;
+}
+
+/* ══════════════════════════════════
+   HOW IT WORKS
+══════════════════════════════════ */
+.section {
+  padding: 100px 6%;
+  position: relative;
+  z-index: 1;
+}
+
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--accent);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-label::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.section-title {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 1rem;
+  line-height: 1.1;
+}
+
+.section-title span { color: var(--accent); }
+
+.section-desc {
+  color: var(--text-mid);
+  max-width: 560px;
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 3.5rem;
+  font-weight: 500;
+}
+
+/* ── Flow steps ── */
+.flow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0;
+  position: relative;
+}
+
+.flow::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  left: 5%;
+  right: 5%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border2) 10%, var(--border2) 90%, transparent);
+}
+
+.flow-step {
+  padding: 0 2rem 2rem;
+  position: relative;
+  text-align: center;
+}
+
+.flow-num {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0 auto 1.5rem;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s;
+}
+
+.flow-step:hover .flow-num {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--accent-dim);
+}
+
+.flow-step h4 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.3px;
+}
+
+.flow-step p {
+  font-size: 0.85rem;
+  color: var(--text-mid);
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* ══════════════════════════════════
+   LOG FORMAT SECTION
+══════════════════════════════════ */
+.log-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .log-section { grid-template-columns: 1fr; }
+}
+
+.log-json {
+  background: #000;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.8;
+}
+
+.log-json-header {
+  background: #0d0d0d;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+.log-json-body {
+  padding: 20px 24px;
+}
+
+.j-key { color: #7ec8e3; }
+.j-str { color: #c8e37e; }
+.j-num { color: #e3c87e; }
+.j-bool-ok { color: var(--green); }
+.j-bool-fail { color: var(--red); }
+.j-dim { color: var(--text-dim); }
+.j-err { color: var(--red); }
+
+/* ══════════════════════════════════
+   COMMANDS SECTION
+══════════════════════════════════ */
+.commands-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cmd-card {
+  background: var(--bg2);
+  padding: 2rem;
+  transition: background 0.2s;
+  cursor: default;
+}
+
+.cmd-card:hover { background: #0e0e0e; }
+
+.cmd-line {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--accent);
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cmd-prompt { color: var(--text-dim); }
+
+.cmd-card h4 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.2px;
+}
+
+.cmd-card p {
+  font-size: 0.83rem; font-weight: 500;
+  color: var(--text-mid);
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* ══════════════════════════════════
+   FEATURES GRID
+══════════════════════════════════ */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .features-grid { grid-template-columns: 1fr; }
+}
+
+.feat-card {
+  background: var(--bg2);
+  padding: 2.5rem 2rem;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s;
+}
+
+.feat-card:hover { background: #0d0d0d; }
+
+.feat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.feat-card:hover::before { opacity: 0.5; }
+
+.feat-icon {
+  width: 44px;
+  height: 44px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(0,255,170,0.15);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  color: var(--accent);
+}
+
+.feat-card h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.2px;
+}
+
+.feat-card p {
+  font-size: 0.84rem;
+  color: var(--text-mid);
+  line-height: 1.65;
+  font-weight: 400;
+}
+
+/* ══════════════════════════════════
+   DISTRO SUPPORT TABLE
+══════════════════════════════════ */
+.support-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.distro-pill {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s;
+}
+
+.distro-pill:hover {
+  border-color: rgba(0,255,170,0.25);
+  background: var(--accent-dim);
+}
+
+.distro-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(0,255,170,0.1);
+  border: 1px solid rgba(0,255,170,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.55rem;
+  color: var(--accent);
+}
+
+.distro-name {
+  font-size: 0.83rem; font-weight: 500;
+  font-weight: 700;
+  color: #bbb;
+}
+
+.distro-pill:hover .distro-name { color: var(--text); }
+
+/* arch pills */
+.arch-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+
+.arch-pill {
+  background: var(--accent-dim);
+  border: 1px solid rgba(0,255,170,0.2);
+  border-radius: 4px;
+  padding: 8px 20px;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ══════════════════════════════════
+   GRAFANA SECTION
+══════════════════════════════════ */
+.grafana-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 5rem;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .grafana-layout { grid-template-columns: 1fr; gap: 3rem; }
+}
+
+.grafana-screen {
+  background: #000;
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+}
+
+.g-topbar {
+  background: #111;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.7rem;
+  font-family: var(--mono);
+  color: var(--text-dim);
+}
+
+.g-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); margin-right: 4px; }
+
+.g-body { padding: 16px; }
+
+.g-panel-title {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-family: var(--mono);
+  margin-bottom: 10px;
+}
+
+.g-hosts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.g-host {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+}
+
+.g-host.ok {
+  background: rgba(0,255,170,0.08);
+  border: 1px solid rgba(0,255,170,0.15);
+  color: var(--accent);
+}
+
+.g-host.fail {
+  background: rgba(255,77,77,0.08);
+  border: 1px solid rgba(255,77,77,0.2);
+  color: var(--red);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.g-host.fail:hover {
+  background: rgba(255,77,77,0.15);
+}
+
+.g-status { font-weight: 700; font-size: 0.65rem; letter-spacing: 1px; }
+
+.g-error-box {
+  margin-top: 10px;
+  background: rgba(255,77,77,0.06);
+  border: 1px solid rgba(255,77,77,0.15);
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: #ff8080;
+  line-height: 1.7;
+  display: none;
+}
+
+.g-error-box.visible { display: block; }
+
+/* ══════════════════════════════════
+   CTA BANNER
+══════════════════════════════════ */
+.cta-band {
+  margin: 0 6% 80px;
+  background: linear-gradient(135deg, #0a0a0a 0%, #000 100%);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 5rem 6%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4rem;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.cta-band::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(0,255,170,0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cta-band h2 {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 0.8rem;
+  line-height: 1.1;
+}
+
+.cta-band h2 span { color: var(--accent); }
+
+.cta-band p {
+  color: var(--text-mid);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 480px;
+}
+
+.cta-term {
+  background: #000;
+  border: 1px solid rgba(0,255,170,0.3);
+  border-radius: 6px;
+  overflow: hidden;
+  min-width: 260px;
+  box-shadow: 0 0 30px rgba(0,255,170,0.08);
+}
+
+.cta-term-body {
+  padding: 16px 20px;
+  font-family: var(--mono);
+  font-size: 0.83rem; font-weight: 500;
+  color: var(--accent);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cta-term-body .dim { color: var(--text-dim); }
+
+@media (max-width: 900px) {
+  .cta-band { grid-template-columns: 1fr; }
+  .cta-term { min-width: unset; }
+}
+
+/* ══════════════════════════════════
+   FOOTER
+══════════════════════════════════ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 3rem 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 3px;
+  color: var(--text-dim);
+  text-decoration: none;
+}
+
+.footer-right {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+/* ══════════════════════════════════
+   ANIMATIONS
+══════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-up {
+  opacity: 0;
+  animation: fadeUp 0.6s ease forwards;
+}
+
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+.delay-4 { animation-delay: 0.4s; }
+.delay-5 { animation-delay: 0.5s; }
+
+/* scanning line effect */
+@keyframes scan {
+  0%   { top: -2px; }
+  100% { top: 100%; }
+}
+
+.scan-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,255,170,0.3), transparent);
+  animation: scan 4s linear infinite;
+  pointer-events: none;
+}
+
+/* pulse dot */
+@keyframes pulse-ring {
+  0%   { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2); opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="2.5" fill="#00ffaa"/>
+        <circle class="radar-ring" cx="12" cy="12" r="6" stroke="#00ffaa" stroke-width="1.5" fill="none"/>
+        <circle class="radar-ring" cx="12" cy="12" r="6" stroke="#00ffaa" stroke-width="1.5" fill="none"/>
+        <circle class="radar-ring" cx="12" cy="12" r="6" stroke="#00ffaa" stroke-width="1.5" fill="none"/>
+        <circle cx="12" cy="12" r="10" stroke="#1a1a1a" stroke-width="1" fill="none"/>
+      </svg>
+    </div>
+    NEURADER
+  </a>
+  <div class="nav-right">
+    <a href="#how-it-works">How It Works</a>
+    <a href="#commands">Commands</a>
+    <a href="#grafana">Grafana</a>
+    <a href="#">GitHub</a>
+    <span class="nav-badge">v0.1.0</span>
   </div>
-  <div id="plane-viewer-root" class="right"></div>
+</nav>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+
+  <div class="hero-eyebrow fade-up">Ansible Execution Monitor</div>
+
+  <div id="plane-viewer-root" class="fade-up delay-1"></div>
+
+  <h1 class="fade-up delay-2">
+    Every playbook run.<br>
+    <em>Fully visible.</em>
+  </h1>
+
+  <p class="hero-sub fade-up delay-3">
+    NeuRader hooks into your Ansible controller and captures every playbook execution — which nodes ran, which succeeded, which failed, and exactly why. Zero ports. Zero daemons. One binary.
+  </p>
+
+  <div class="install-terminal fade-up delay-4">
+    <div class="term-bar">
+      <div class="term-dot r"></div>
+      <div class="term-dot y"></div>
+      <div class="term-dot g"></div>
+      <span class="term-title">install</span>
+      <div class="scan-line"></div>
+    </div>
+    <div class="term-body">
+      <code>
+        <span class="prompt">$ </span>sudo curl -L https://neurader.operman.in/neurader/releases/latest/neurader-linux-amd64 -o neurader &amp;&amp; sudo chmod +x neurader &amp;&amp; sudo ./neurader init
+      </code>
+      <button class="copy-btn" onclick="copyInstall(this)" title="Copy command">
+        <i class="far fa-copy"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="hero-note fade-up delay-5">
+    <span><i class="fas fa-check-circle"></i> Root required for init only</span>
+    <span><i class="fas fa-check-circle"></i> 15MB static binary</span>
+    <span><i class="fas fa-check-circle"></i> x86_64 · ARM64 · ARM32</span>
+    <span><i class="fas fa-check-circle"></i> All major Linux distros</span>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section" id="how-it-works">
+  <div class="section-label">How it works</div>
+  <h2 class="section-title">Setup once.<br><span>Works forever.</span></h2>
+  <p class="section-desc">Run one command. NeuRader auto-detects your Ansible installation, wires up the callback plugin, and starts recording every playbook execution automatically.</p>
+
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-num">01</div>
+      <h4>Install &amp; Init</h4>
+      <p>Download the binary for your arch. Run <code style="color:var(--accent);font-size:0.75rem">sudo neurader init</code>. The setup wizard handles everything.</p>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">02</div>
+      <h4>Auto Detection</h4>
+      <p>Detects your distro, Ansible install method (apt / pip / pipx), callback plugin directory, and ansible.cfg. Zero manual config.</p>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">03</div>
+      <h4>Plugin Installed</h4>
+      <p>Writes <code style="color:var(--accent);font-size:0.75rem">neurader_callback.py</code> into your Ansible callback dir and patches ansible.cfg automatically.</p>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">04</div>
+      <h4>Run Playbooks</h4>
+      <p>Use <code style="color:var(--accent);font-size:0.75rem">ansible-playbook</code> exactly as you always have. NeuRader captures every run silently in the background.</p>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">05</div>
+      <h4>Logs Written</h4>
+      <p>Each run creates a timestamped JSON file in <code style="color:var(--accent);font-size:0.75rem">/var/log/neurader/</code> with full per-host results and error output.</p>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">06</div>
+      <h4>Grafana Dashboard</h4>
+      <p>Optionally connect Grafana. Every subsequent run syncs automatically — NeuRader creates the datasource, imports the dashboard, and pushes each run in the background.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <div class="log-section">
+    <div>
+      <div class="section-label">Log format</div>
+      <h2 class="section-title">Structured JSON.<br><span>Every time.</span></h2>
+      <p class="section-desc">Each playbook run produces a clean JSON file named <code style="color:var(--accent);font-size:0.85rem">playbook_2025-01-24_14-30-00.json</code>. Every managed node is captured with its exact outcome.</p>
+
+      <div style="display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem;">
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:1.2rem;background:var(--card);border:1px solid var(--border2);border-radius:6px;">
+          <div style="width:32px;height:32px;background:rgba(0,255,170,0.1);border:1px solid rgba(0,255,170,0.2);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fas fa-check" style="color:var(--accent);font-size:0.75rem"></i>
+          </div>
+          <div>
+            <div style="font-size:0.82rem;font-weight:700;margin-bottom:4px;">Success hosts</div>
+            <div style="font-size:0.75rem;color:var(--text-mid);line-height:1.6;">Status, ok/changed/skipped counts, full Ansible summary per host.</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:1.2rem;background:var(--card);border:1px solid var(--border2);border-radius:6px;">
+          <div style="width:32px;height:32px;background:rgba(255,77,77,0.08);border:1px solid rgba(255,77,77,0.2);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fas fa-times" style="color:var(--red);font-size:0.75rem"></i>
+          </div>
+          <div>
+            <div style="font-size:0.82rem;font-weight:700;margin-bottom:4px;">Failed hosts</div>
+            <div style="font-size:0.75rem;color:var(--text-mid);line-height:1.6;">Full error output: msg, stdout, stderr, return code, and which module failed.</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:1.2rem;background:var(--card);border:1px solid var(--border2);border-radius:6px;">
+          <div style="width:32px;height:32px;background:rgba(255,77,77,0.08);border:1px solid rgba(255,77,77,0.2);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fas fa-wifi" style="color:var(--red);font-size:0.75rem;text-decoration:line-through"></i>
+          </div>
+          <div>
+            <div style="font-size:0.82rem;font-weight:700;margin-bottom:4px;">Unreachable hosts</div>
+            <div style="font-size:0.75rem;color:var(--text-mid);line-height:1.6;">SSH failures, connection refused, timeout — captured separately from task failures.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-family:var(--mono);font-size:0.72rem;color:var(--text-dim);display:flex;align-items:center;gap:10px;">
+        <i class="fas fa-rotate" style="color:var(--accent)"></i>
+        Logs older than your configured retention period are automatically deleted
+      </div>
+    </div>
+
+    <div class="log-json">
+      <div class="log-json-header">
+        <i class="fas fa-circle" style="color:#ff5f57;font-size:0.5rem"></i>
+        <i class="fas fa-circle" style="color:#ffbd2e;font-size:0.5rem"></i>
+        <i class="fas fa-circle" style="color:#28ca41;font-size:0.5rem"></i>
+        <span style="margin-left:8px;">site.yml_2025-01-24_14-30-00.json</span>
+      </div>
+      <div class="log-json-body">
+        <pre><span class="j-dim">{</span>
+  <span class="j-key">"playbook"</span><span class="j-dim">:</span>    <span class="j-str">"site.yml"</span><span class="j-dim">,</span>
+  <span class="j-key">"start_time"</span><span class="j-dim">:</span>  <span class="j-str">"2025-01-24T14:29:45Z"</span><span class="j-dim">,</span>
+  <span class="j-key">"end_time"</span><span class="j-dim">:</span>    <span class="j-str">"2025-01-24T14:30:02Z"</span><span class="j-dim">,</span>
+  <span class="j-key">"total_hosts"</span><span class="j-dim">:</span> <span class="j-num">3</span><span class="j-dim">,</span>
+  <span class="j-key">"hosts"</span><span class="j-dim">: {</span>
+    <span class="j-key">"web01"</span><span class="j-dim">: {</span>
+      <span class="j-key">"status"</span><span class="j-dim">:</span> <span class="j-bool-ok">"success"</span><span class="j-dim">,</span>
+      <span class="j-key">"summary"</span><span class="j-dim">: {</span>
+        <span class="j-key">"ok"</span><span class="j-dim">:</span> <span class="j-num">12</span><span class="j-dim">,</span>
+        <span class="j-key">"changed"</span><span class="j-dim">:</span> <span class="j-num">3</span><span class="j-dim">,</span>
+        <span class="j-key">"failures"</span><span class="j-dim">:</span> <span class="j-num">0</span>
+      <span class="j-dim">}</span>
+    <span class="j-dim">},</span>
+    <span class="j-key">"db01"</span><span class="j-dim">: {</span>
+      <span class="j-key">"status"</span><span class="j-dim">:</span> <span class="j-bool-fail">"failed"</span><span class="j-dim">,</span>
+      <span class="j-key">"error_output"</span><span class="j-dim">: {</span>
+        <span class="j-key">"msg"</span><span class="j-dim">:</span>    <span class="j-err">"Permission denied"</span><span class="j-dim">,</span>
+        <span class="j-key">"stderr"</span><span class="j-dim">:</span> <span class="j-err">"sudo: password required"</span><span class="j-dim">,</span>
+        <span class="j-key">"rc"</span><span class="j-dim">:</span>     <span class="j-num">1</span><span class="j-dim">,</span>
+        <span class="j-key">"module"</span><span class="j-dim">:</span> <span class="j-str">"ansible.builtin.command"</span>
+      <span class="j-dim">}</span>
+    <span class="j-dim">}</span>
+  <span class="j-dim">}</span>
+<span class="j-dim">}</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section" id="commands">
+  <div class="section-label">CLI Reference</div>
+  <h2 class="section-title">Simple commands.<br><span>Full control.</span></h2>
+  <p class="section-desc">Everything through one binary. No config files to edit, no services to manage.</p>
+
+  <div class="commands-grid">
+    <div class="cmd-card">
+      <div class="cmd-line"><span class="cmd-prompt">$</span> neurader init</div>
+      <h4>Setup Wizard</h4>
+      <p>Detects Ansible, creates directories, installs callback plugin, patches ansible.cfg, sets up log cleanup scheduler, and optionally configures Grafana.</p>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-line"><span class="cmd-prompt">$</span> neurader list</div>
+      <h4>List All Runs</h4>
+      <p>Shows all recorded playbook runs sorted newest first — with playbook name, timestamp, total hosts, success count, and failed count.</p>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-line"><span class="cmd-prompt">$</span> neurader show &lt;file&gt;</div>
+      <h4>Inspect a Run</h4>
+      <p>Prints full per-host results for a specific run. Failed hosts display in red with full error output: msg, stderr, rc, and module name.</p>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-line"><span class="cmd-prompt">$</span> neurader clean</div>
+      <h4>Purge Old Logs</h4>
+      <p>Manually delete logs older than your configured retention period. Also runs automatically via systemd timer or cron fallback every 12 hours.</p>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-line"><span class="cmd-prompt">$</span> neurader push</div>
+      <h4>Backfill to Grafana</h4>
+      <p>Push all existing logs to Grafana. Only needed once when you first connect Grafana — after that every run syncs automatically in the background.</p>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-line"><span class="cmd-prompt">$</span> neurader grafana-setup</div>
+      <h4>Grafana Config</h4>
+      <p>Create the Neurader datasource and import the pre-built dashboard into Grafana. Can be re-run after changing your Grafana endpoint.</p>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-line"><span class="cmd-prompt">$</span> neurader status</div>
+      <h4>Health Check</h4>
+      <p>Shows current config: log dir, retention period, callback plugin path, ansible.cfg location, Grafana endpoint, and total stored runs.</p>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-line"><span class="cmd-prompt">$</span> neurader uninstall</div>
+      <h4>Clean Removal</h4>
+      <p>Removes the callback plugin, reverts ansible.cfg, disables the cleanup timer, and removes all config and log files. Leaves no trace.</p>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-line"><span class="cmd-prompt">$</span> neurader reset-callback</div>
+      <h4>Restore Default Plugin</h4>
+      <p>Overwrites the installed callback plugin with the default version embedded in the binary. Use this after customising the log format and wanting to revert.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section" id="grafana">
+  <div class="grafana-layout">
+    <div>
+      <div class="section-label">Grafana Integration</div>
+      <h2 class="section-title">Green or red.<br><span>Click to drill down.</span></h2>
+      <p class="section-desc" style="margin-bottom:2rem;">NeuRader creates a datasource and imports a pre-built dashboard into your Grafana instance. Every playbook run is pushed to Grafana automatically — no manual steps. Open your dashboard and the latest run is already there.</p>
+
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <div style="display:flex;align-items:center;gap:12px;font-size:0.82rem;">
+          <i class="fas fa-circle-check" style="color:var(--accent);width:16px"></i>
+          Select any historical playbook run from a dropdown
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:0.82rem;">
+          <i class="fas fa-circle-check" style="color:var(--accent);width:16px"></i>
+          Each host shown as green (success) or red (failed/unreachable)
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:0.82rem;">
+          <i class="fas fa-circle-check" style="color:var(--accent);width:16px"></i>
+          Click any red host to expand full error output
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:0.82rem;">
+          <i class="fas fa-circle-check" style="color:var(--accent);width:16px"></i>
+          Works with Grafana on bare metal, Docker, or Kubernetes
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:0.82rem;">
+          <i class="fas fa-circle-check" style="color:var(--accent);width:16px"></i>
+          Dashboard and datasource created automatically by <code style="color:var(--accent)">neurader grafana-setup</code>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:0.82rem;">
+          <i class="fas fa-circle-check" style="color:var(--accent);width:16px"></i>
+          Every playbook run syncs to Grafana automatically — no manual push needed
+        </div>
+      </div>
+    </div>
+
+    <div class="grafana-screen">
+      <div class="g-topbar">
+        <span class="g-dot"></span>
+        <span style="color:var(--text-mid)">Neurader — Ansible Playbook Monitor</span>
+        <span style="margin-left:auto;background:rgba(0,255,170,0.08);border:1px solid rgba(0,255,170,0.15);padding:2px 8px;border-radius:2px;color:var(--accent)">LIVE</span>
+      </div>
+      <div class="g-body">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          <span style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim)">RUN:</span>
+          <span style="font-family:var(--mono);font-size:0.68rem;color:var(--text);background:var(--border);padding:3px 10px;border-radius:3px;">site.yml_2025-01-24_14-30-00</span>
+        </div>
+        <div class="g-panel-title">Host Execution Status</div>
+        <div class="g-hosts">
+          <div class="g-host ok">
+            <span>web01.prod.example.com</span>
+            <span class="g-status">✓ SUCCESS</span>
+          </div>
+          <div class="g-host ok">
+            <span>web02.prod.example.com</span>
+            <span class="g-status">✓ SUCCESS</span>
+          </div>
+          <div class="g-host ok">
+            <span>web03.prod.example.com</span>
+            <span class="g-status">✓ SUCCESS</span>
+          </div>
+          <div class="g-host fail" onclick="toggleError(this)">
+            <span>db01.prod.example.com</span>
+            <span class="g-status">✗ FAILED ↓ click</span>
+          </div>
+          <div class="g-error-box">
+            module: ansible.builtin.command<br>
+            msg: Permission denied<br>
+            stderr: sudo: a password is required<br>
+            rc: 1
+          </div>
+          <div class="g-host fail" onclick="toggleError(this)" style="margin-top:0">
+            <span>cache01.prod.example.com</span>
+            <span class="g-status">✗ UNREACHABLE ↓ click</span>
+          </div>
+          <div class="g-error-box">
+            module: connection<br>
+            msg: Failed to connect to the host via SSH<br>
+            rc: -1
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <div class="section-label">Platform Support</div>
+  <h2 class="section-title">Runs everywhere<br><span>Ansible runs.</span></h2>
+  <p class="section-desc">A single statically linked Go binary with zero dependencies. Supports every architecture and every major Linux distribution out of the box.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin-bottom:3rem;">
+    <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
+      <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">x86_64 · Intel / AMD</div>
+      <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;word-break:break-all;">neurader-linux-amd64</div>
+      <a href="https://neurader.operman.in/neurader/releases/latest/neurader-linux-amd64"
+         style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:all 0.2s;"
+         onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">
+        <i class="fas fa-download"></i> Download
+      </a>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
+      <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">ARM64 · Graviton / Pi 4+</div>
+      <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;word-break:break-all;">neurader-linux-arm64</div>
+      <a href="https://neurader.operman.in/releases/latest/neurader-linux-arm64"
+         style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:all 0.2s;"
+         onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">
+        <i class="fas fa-download"></i> Download
+      </a>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
+      <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">ARM32 · Pi 2/3 / Embedded</div>
+      <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;word-break:break-all;">neurader-linux-arm</div>
+      <a href="https://neurader.operman.in/releases/latest/neurader-linux-arm"
+         style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:all 0.2s;"
+         onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">
+        <i class="fas fa-download"></i> Download
+      </a>
+    </div>
+  </div>
+
+  <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);margin-bottom:3rem;display:flex;align-items:center;gap:10px;">
+    <i class="fas fa-shield-halved" style="color:var(--accent)"></i>
+    Verify integrity:
+    <a href="https://neurader.operman.in/releases/latest/checksums.sha256"
+       style="color:var(--accent);text-decoration:none;">checksums.sha256</a>
+    &nbsp;·&nbsp; Always points to the latest release
+  </div>
+
+  <div class="arch-row">
+    <div class="arch-pill"><i class="fas fa-microchip"></i> x86_64 (amd64)</div>
+    <div class="arch-pill"><i class="fas fa-microchip"></i> ARM64 (aarch64)</div>
+    <div class="arch-pill"><i class="fas fa-microchip"></i> ARM32 (armv7)</div>
+  </div>
+
+  <div class="support-grid">
+    <div class="distro-pill"><div class="distro-check"><i class="fas fa-check"></i></div><span class="distro-name">Ubuntu 20/22/24</span></div>
+    <div class="distro-pill"><div class="distro-check"><i class="fas fa-check"></i></div><span class="distro-name">Debian 11/12</span></div>
+    <div class="distro-pill"><div class="distro-check"><i class="fas fa-check"></i></div><span class="distro-name">RHEL 8/9</span></div>
+    <div class="distro-pill"><div class="distro-check"><i class="fas fa-check"></i></div><span class="distro-name">CentOS Stream</span></div>
+    <div class="distro-pill"><div class="distro-check"><i class="fas fa-check"></i></div><span class="distro-name">Rocky Linux</span></div>
+    <div class="distro-pill"><div class="distro-check"><i class="fas fa-check"></i></div><span class="distro-name">AlmaLinux</span></div>
+    <div class="distro-pill"><div class="distro-check"><i class="fas fa-check"></i></div><span class="distro-name">Fedora</span></div>
+    <div class="distro-pill"><div class="distro-check"><i class="fas fa-check"></i></div><span class="distro-name">Amazon Linux 2/2023</span></div>
+    <div class="distro-pill"><div class="distro-check"><i class="fas fa-check"></i></div><span class="distro-name">openSUSE</span></div>
+    <div class="distro-pill"><div class="distro-check"><i class="fas fa-check"></i></div><span class="distro-name">Arch Linux</span></div>
+    <div class="distro-pill"><div class="distro-check"><i class="fas fa-check"></i></div><span class="distro-name">Alpine Linux</span></div>
+    <div class="distro-pill"><div class="distro-check"><i class="fas fa-check"></i></div><span class="distro-name">Any pip/pipx Ansible</span></div>
+  </div>
+
+  <div style="margin-top:2.5rem;display:flex;gap:2rem;flex-wrap:wrap;">
+    <div style="padding:1.2rem 2rem;background:var(--card);border:1px solid var(--border2);border-radius:6px;display:flex;align-items:center;gap:12px;">
+      <i class="fas fa-box" style="color:var(--accent)"></i>
+      <div>
+        <div style="font-size:0.8rem;font-weight:700;">Ansible install method detection</div>
+        <div style="font-size:0.72rem;color:var(--text-mid);margin-top:2px;">apt · dnf · yum · pip · pipx — all detected automatically</div>
+      </div>
+    </div>
+    <div style="padding:1.2rem 2rem;background:var(--card);border:1px solid var(--border2);border-radius:6px;display:flex;align-items:center;gap:12px;">
+      <i class="fas fa-clock" style="color:var(--accent)"></i>
+      <div>
+        <div style="font-size:0.8rem;font-weight:700;">Cleanup scheduler</div>
+        <div style="font-size:0.72rem;color:var(--text-mid);margin-top:2px;">systemd timer where available · cron fallback · per-run fallback</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <div class="section-label">Design Principles</div>
+  <h2 class="section-title">Built the right way.<br><span>No compromises.</span></h2>
+  <p class="section-desc" style="margin-bottom:3rem;">NeuRader was designed with one rule: it should never get in your way.</p>
+
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon"><i class="fas fa-plug-circle-xmark"></i></div>
+      <h3>No Ports. No Daemons.</h3>
+      <p>The Ansible controller exposes nothing. No HTTP server, no Unix socket, no background service. The Python callback writes directly to disk. The Go binary runs only when invoked.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
+      <h3>Zero Manual Config</h3>
+      <p><code style="color:var(--accent);font-size:0.78rem">neurader init</code> does everything: creates directories, detects Ansible, installs the plugin, patches ansible.cfg, and sets up log rotation. You never touch a file.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><i class="fas fa-cube"></i></div>
+      <h3>Self-Contained Binary</h3>
+      <p>The Python callback plugin, systemd units, and Grafana dashboard are all embedded inside the Go binary via <code style="color:var(--accent);font-size:0.78rem">go:embed</code>. Download one file. That's the entire tool.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><i class="fas fa-file-code"></i></div>
+      <h3>Structured JSON Logs</h3>
+      <p>Every playbook run writes a clean, human-readable JSON file. Logs are named <code style="color:var(--accent);font-size:0.78rem">playbook_date_time.json</code> and stored in <code style="color:var(--accent);font-size:0.78rem">/var/log/neurader/</code>.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><i class="fas fa-rotate"></i></div>
+      <h3>Automatic Log Rotation</h3>
+      <p>Configure your retention period once. NeuRader automatically deletes logs older than your threshold via a systemd timer (every 12h) or cron fallback.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><i class="fas fa-chart-bar"></i></div>
+      <h3>Grafana Ready</h3>
+      <p>One command sets up the datasource and imports the dashboard. Works with Grafana on any infrastructure — bare metal, Docker, Kubernetes, cloud-hosted.</p>
+    </div>
+  </div>
+</section>
+
+<div class="cta-band">
+  <div>
+    <h2>Ready to see what your<br>Ansible is <span>actually doing?</span></h2>
+    <p style="margin-top:1rem;">One binary. One command. Full visibility into every playbook execution across your entire fleet.</p>
+  </div>
+  <div class="cta-term">
+    <div class="cta-term-body">
+      <span class="dim"># download (amd64)</span>
+      <span>curl -L https://neurader.operman.in/<br>&nbsp;&nbsp;releases/latest/neurader-linux-amd64 \</span>
+      <span>&nbsp;&nbsp;-o neurader</span>
+      <span class="dim">&nbsp;</span>
+      <span class="dim"># make executable</span>
+      <span>chmod +x neurader</span>
+      <span class="dim">&nbsp;</span>
+      <span class="dim"># setup wizard (run once)</span>
+      <span>sudo ./neurader init</span>
+    </div>
+  </div>
 </div>
+
+<footer>
+  <a href="#" class="footer-logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="2.5" fill="#00ffaa"/>
+      <circle cx="12" cy="12" r="7" stroke="#1e1e1e" stroke-width="1.5" fill="none"/>
+      <circle cx="12" cy="12" r="10" stroke="#161616" stroke-width="1" fill="none"/>
+    </svg>
+    NEURADER
+  </a>
+  <div class="footer-right">© 2026 NEURADER PROJECT · Omkar Jagtap</div>
+</footer>
+
+<script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.154.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.154.0/examples/jsm/"
+    }
+  }
+</script>
+
+<script type="module">
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+  const container = document.getElementById('plane-viewer-root');
+  
+  // Scene Setup
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+  camera.position.set(0, 0, 8);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  container.appendChild(renderer.domElement);
+
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+  scene.add(ambientLight);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  directionalLight.position.set(3, 3, 3);
+  scene.add(directionalLight);
+
+  // Controls
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableZoom = false;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 2;
+
+  // Animation Mixer
+  let mixer;
+  const clock = new THREE.Clock();
+
+  // Load Model
+  const loader = new GLTFLoader();
+  loader.load('./basic_plane.glb', (gltf) => {
+    const model = gltf.scene;
+    model.scale.set(0.8, 0.8, 0.8);
+    scene.add(model);
+
+    // Auto-play all animations (propellers, etc.)
+    if (gltf.animations && gltf.animations.length > 0) {
+      mixer = new THREE.AnimationMixer(model);
+      gltf.animations.forEach((clip) => {
+        mixer.clipAction(clip).play();
+      });
+    }
+  }, undefined, (error) => {
+    console.error('Error loading 3D model:', error);
+    container.innerHTML = '<div style="color:var(--text-dim); display:flex; align-items:center; justify-content:center; height:100%; font-family:var(--mono); font-size:0.8rem;">Model Loading...</div>';
+  });
+
+  // Render Loop
+  function animate() {
+    requestAnimationFrame(animate);
+    const delta = clock.getDelta();
+    if (mixer) mixer.update(delta);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  // Handle Resize
+  window.addEventListener('resize', () => {
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+  });
+
+  animate();
+</script>
+
+<script>
+function copyInstall(btn) {
+  const cmd = "sudo curl -L https://neurader.operman.in/releases/latest/neurader-linux-amd64 -o neurader && sudo chmod +x neurader && sudo ./neurader init";
+  navigator.clipboard.writeText(cmd).then(() => {
+    const icon = btn.querySelector('i');
+    icon.className = "fas fa-check";
+    icon.style.color = "var(--accent)";
+    setTimeout(() => {
+      icon.className = "far fa-copy";
+      icon.style.color = "";
+    }, 2000);
+  });
+}
+
+function toggleError(el) {
+  const box = el.nextElementSibling;
+  if (box && box.classList.contains('g-error-box')) {
+    box.classList.toggle('visible');
+    const status = el.querySelector('.g-status');
+    if (box.classList.contains('visible')) {
+      status.textContent = status.textContent.replace('↓ click', '↑ hide');
+    } else {
+      status.textContent = status.textContent.replace('↑ hide', '↓ click');
+    }
+  }
+}
+
+// Intersection observer for scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.flow-step, .cmd-card, .feat-card, .distro-pill').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  observer.observe(el);
+});
+</script>
+
+</body>
+</html>
