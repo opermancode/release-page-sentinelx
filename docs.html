@@ -361,6 +361,47 @@
             .content { margin-left: 0; padding: 2rem; }
             .page-header h1 { font-size: 2.5rem; }
         }
+
+        /* ── Screenshots ──────────────────────────────────── */
+        .screenshot-wrap {
+            margin: 2rem 0;
+        }
+
+        .screenshot-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .screenshot-label::before {
+            content: '';
+            display: inline-block;
+            width: 6px; height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--accent);
+        }
+
+        .screenshot {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid #1a1a1a;
+            display: block;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+        }
+
+        .screenshot-caption {
+            font-size: 0.8rem;
+            color: #444;
+            margin-top: 0.6rem;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -417,6 +458,12 @@
         <div class="info-box">
             <p><strong style="color:var(--accent)">Designed for scale.</strong> Built for infrastructure teams managing 50–200+ Linux servers with Ansible. When a playbook touches 100 hosts and 3 fail, neurader tells you exactly which hosts failed, which module caused it, and the full error — without scrolling through terminal output.</p>
         </div>
+
+        <div class="screenshot-wrap">
+            <div class="screenshot-label">Live — neurader list output</div>
+            <img src="screenshot-9.png" class="screenshot" alt="neurader list showing multiple playbook runs with aligned table">
+            <p class="screenshot-caption">neurader list — every playbook run captured automatically with per-host success and failure counts.</p>
+        </div>
     </section>
 
     <!-- Installation -->
@@ -467,6 +514,12 @@
                 <tr><td>conda install ansible</td><td>Any Linux</td><td>✓</td></tr>
             </tbody>
         </table>
+
+        <div class="screenshot-wrap">
+            <div class="screenshot-label">Example — ansible inventory</div>
+            <img src="screenshot-5.png" class="screenshot" alt="Ansible hosts inventory file showing 3 managed nodes">
+            <p class="screenshot-caption">Typical Ansible inventory — neurader works with any inventory structure, no changes required.</p>
+        </div>
     </section>
 
     <!-- Setup Wizard -->
@@ -527,6 +580,18 @@ node1 (SSH)        node2 (SSH)        node3 (SSH)
         </div>
 
         <p>neurader lives entirely on the Ansible controller. Managed nodes have zero awareness of it.</p>
+
+        <div class="screenshot-wrap">
+            <div class="screenshot-label">Example — successful playbook run</div>
+            <img src="screenshot-4.png" class="screenshot" alt="ansible-playbook run with all nodes succeeding and neurader logging at bottom">
+            <p class="screenshot-caption">After a successful run — neurader silently logs at the bottom. <code>[neurader] Run logged → /var/log/neurader/...</code></p>
+        </div>
+
+        <div class="screenshot-wrap" style="margin-top:2rem">
+            <div class="screenshot-label">Example — playbook run with failure</div>
+            <img src="screenshot-1.png" class="screenshot" alt="ansible-playbook run with node3 failing and neurader logging">
+            <p class="screenshot-caption">When a host fails — Ansible shows the error in terminal, neurader captures the full details to JSON for later inspection.</p>
+        </div>
     </section>
 
     <!-- Components -->
@@ -584,6 +649,12 @@ node1 (SSH)        node2 (SSH)        node3 (SSH)
   }
 }</pre>
         </div>
+
+        <div class="screenshot-wrap">
+            <div class="screenshot-label">Live — neurader show output</div>
+            <img src="screenshot-3.png" class="screenshot" alt="neurader list and neurader show displaying per-host results">
+            <p class="screenshot-caption"><code>neurader list</code> then <code>neurader show</code> — per-host status, ok/changed/skipped counts at a glance.</p>
+        </div>
     </section>
 
     <hr class="divider">
@@ -629,6 +700,12 @@ node1 (SSH)        node2 (SSH)        node3 (SSH)
 [neurader] ✓ installed at /usr/bin/neurader</span></pre>
         </div>
 
+
+        <div class="screenshot-wrap">
+            <div class="screenshot-label">Live — neurader upgrade</div>
+            <img src="screenshot-8.png" class="screenshot" alt="neurader upgrade showing already up to date">
+            <p class="screenshot-caption">neurader upgrade — detects architecture, checks latest version, and upgrades automatically. Handles sudo internally.</p>
+        </div>
         <p>No need to re-run <code>neurader init</code> after upgrading. Config, logs, and callback plugin are untouched — only the binary is replaced.</p>
 
         <p>Or upgrade manually:</p>
