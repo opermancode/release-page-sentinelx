@@ -935,9 +935,9 @@ footer {
    RESPONSIVE
 ══════════════════════════════════ */
 @media (max-width: 900px) {
-  nav { flex-direction: column; gap: 1rem; padding: 1rem 5%; }
+  nav { position: sticky; top: 0; flex-direction: column; gap: 1rem; padding: 1rem 5%; }
   .nav-right { flex-wrap: wrap; justify-content: center; gap: 1rem; }
-  .hero { padding: 140px 20px 60px; }
+  .hero { padding: 60px 20px; }
   .section { padding: 60px 20px; }
   .cta-band { text-align: center; padding: 3rem 2rem; gap: 2rem; }
   .cta-band p { margin-left: auto; margin-right: auto; }
@@ -953,8 +953,12 @@ footer {
   .term-body { padding: 15px; }
   .term-body code { font-size: 0.75rem; }
   
-  .nav-right { gap: 0.8rem; }
-  .nav-right a { font-size: 0.75rem; }
+  nav { padding: 12px 5%; gap: 12px; }
+  .logo { font-size: 0.9rem; }
+  .logo-icon { width: 28px; height: 28px; }
+  .nav-right { gap: 8px 16px; }
+  .nav-right a { font-size: 0.7rem; }
+  .nav-badge { font-size: 0.6rem; padding: 2px 6px; }
   
   .section-title { font-size: 1.8rem; }
   
