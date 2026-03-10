@@ -475,7 +475,7 @@
         <h3>amd64 — Intel / AMD servers, most cloud VMs</h3>
         <div class="code-block">
             <div class="code-label">bash</div>
-            <pre><span class="cmd">curl</span> <span class="flag">-L</span> https://neurader.operman.in/neurader/releases/latest/neurader-linux-amd64 <span class="flag">-o</span> neurader
+            <pre><span class="cmd">curl</span> <span class="flag">-L</span> https://neurader.cloud/neurader/releases/latest/neurader-linux-amd64 <span class="flag">-o</span> neurader
 <span class="cmd">chmod</span> +x neurader
 <span class="cmd">sudo mv</span> neurader /usr/bin/neurader</pre>
         </div>
@@ -483,7 +483,7 @@
         <h3>arm64 — AWS Graviton, Raspberry Pi 4/5</h3>
         <div class="code-block">
             <div class="code-label">bash</div>
-            <pre><span class="cmd">curl</span> <span class="flag">-L</span> https://neurader.operman.in/neurader/releases/latest/neurader-linux-arm64 <span class="flag">-o</span> neurader
+            <pre><span class="cmd">curl</span> <span class="flag">-L</span> https://neurader.cloud/neurader/releases/latest/neurader-linux-arm64 <span class="flag">-o</span> neurader
 <span class="cmd">chmod</span> +x neurader
 <span class="cmd">sudo mv</span> neurader /usr/bin/neurader</pre>
         </div>
@@ -491,7 +491,7 @@
         <h3>arm — Raspberry Pi 2/3, older embedded controllers</h3>
         <div class="code-block">
             <div class="code-label">bash</div>
-            <pre><span class="cmd">curl</span> <span class="flag">-L</span> https://neurader.operman.in/neurader/releases/latest/neurader-linux-arm <span class="flag">-o</span> neurader
+            <pre><span class="cmd">curl</span> <span class="flag">-L</span> https://neurader.cloud/neurader/releases/latest/neurader-linux-arm <span class="flag">-o</span> neurader
 <span class="cmd">chmod</span> +x neurader
 <span class="cmd">sudo mv</span> neurader /usr/bin/neurader</pre>
         </div>
@@ -499,7 +499,7 @@
         <h3>Verify checksum</h3>
         <div class="code-block">
             <div class="code-label">bash</div>
-            <pre><span class="cmd">curl</span> <span class="flag">-L</span> https://neurader.operman.in/neurader/releases/latest/checksums.sha256 <span class="flag">-o</span> checksums.sha256
+            <pre><span class="cmd">curl</span> <span class="flag">-L</span> https://neurader.cloud/neurader/releases/latest/checksums.sha256 <span class="flag">-o</span> checksums.sha256
 <span class="cmd">sha256sum</span> <span class="flag">-c</span> checksums.sha256</pre>
         </div>
 
@@ -712,7 +712,7 @@ node1 (SSH)        node2 (SSH)        node3 (SSH)
         <p>Or upgrade manually:</p>
         <div class="code-block">
             <div class="code-label">bash</div>
-            <pre><span class="cmd">sudo curl</span> <span class="flag">-L</span> https://neurader.operman.in/neurader/releases/latest/neurader-linux-amd64 <span class="flag">-o</span> /usr/bin/neurader
+            <pre><span class="cmd">sudo curl</span> <span class="flag">-L</span> https://neurader.cloud/neurader/releases/latest/neurader-linux-amd64 <span class="flag">-o</span> /usr/bin/neurader
 <span class="cmd">sudo chmod</span> +x /usr/bin/neurader
 <span class="cmd">neurader version</span></pre>
         </div>
