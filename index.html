@@ -1058,7 +1058,7 @@ footer {
     </div>
     <div class="term-body">
       <code>
-        <span class="prompt">$ </span>sudo curl -L https://neurader.operman.in/neurader/releases/latest/neurader-linux-amd64 -o neurader &amp;&amp; sudo chmod +x neurader &amp;&amp; sudo ./neurader init
+        <span class="prompt">$ </span>sudo curl -L https://neurader.cloud/neurader/releases/latest/neurader-linux-amd64 -o neurader &amp;&amp; sudo chmod +x neurader &amp;&amp; sudo ./neurader init
       </code>
       <button class="copy-btn" onclick="copyInstall(this)" title="Copy command">
         <i class="far fa-copy"></i>
@@ -1352,7 +1352,7 @@ footer {
     <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
       <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">x86_64 · Intel / AMD</div>
       <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;word-break:break-all;">neurader-linux-amd64</div>
-      <a href="https://neurader.operman.in/neurader/releases/latest/neurader-linux-amd64"
+      <a href="https://neurader.cloud/neurader/releases/latest/neurader-linux-amd64"
          style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:all 0.2s;"
          onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">
         <i class="fas fa-download"></i> Download
@@ -1361,7 +1361,7 @@ footer {
     <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
       <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">ARM64 · Graviton / Pi 4+</div>
       <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;word-break:break-all;">neurader-linux-arm64</div>
-      <a href="https://neurader.operman.in/neurader/releases/latest/neurader-linux-arm64"
+      <a href="https://neurader.cloud/neurader/releases/latest/neurader-linux-arm64"
          style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:all 0.2s;"
          onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">
         <i class="fas fa-download"></i> Download
@@ -1370,7 +1370,7 @@ footer {
     <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
       <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">ARM32 · Pi 2/3 / Embedded</div>
       <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;word-break:break-all;">neurader-linux-arm</div>
-      <a href="https://neurader.operman.in/neurader/releases/latest/neurader-linux-arm"
+      <a href="https://neurader.cloud/neurader/releases/latest/neurader-linux-arm"
          style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:all 0.2s;"
          onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">
         <i class="fas fa-download"></i> Download
@@ -1381,7 +1381,7 @@ footer {
   <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);margin-bottom:3rem;display:flex;align-items:center;gap:10px;">
     <i class="fas fa-shield-halved" style="color:var(--accent)"></i>
     Verify integrity:
-    <a href="https://neurader.operman.in/neurader/releases/latest/checksums.sha256"
+    <a href="https://neurader.cloud/neurader/releases/latest/checksums.sha256"
        style="color:var(--accent);text-decoration:none;">checksums.sha256</a>
     &nbsp;·&nbsp; Always points to the latest release
   </div>
@@ -1474,7 +1474,7 @@ footer {
   <div class="cta-term">
     <div class="cta-term-body">
       <span class="dim"># download (amd64)</span>
-      <span>curl -L https://neurader.operman.in/<br>&nbsp;&nbsp;releases/latest/neurader-linux-amd64 \</span>
+      <span>curl -L https://neurader.cloud/<br>&nbsp;&nbsp;releases/latest/neurader-linux-amd64 \</span>
       <span>&nbsp;&nbsp;-o neurader</span>
       <span class="dim">&nbsp;</span>
       <span class="dim"># make executable</span>
@@ -1582,7 +1582,7 @@ footer {
 
 <script>
 function copyInstall(btn) {
-  const cmd = "sudo curl -L https://neurader.operman.in/neurader/releases/latest/neurader-linux-amd64 -o neurader && sudo chmod +x neurader && sudo ./neurader init";
+  const cmd = "sudo curl -L https://neurader.cloud/neurader/releases/latest/neurader-linux-amd64 -o neurader && sudo chmod +x neurader && sudo ./neurader init";
   navigator.clipboard.writeText(cmd).then(() => {
     const icon = btn.querySelector('i');
     icon.className = "fas fa-check";
