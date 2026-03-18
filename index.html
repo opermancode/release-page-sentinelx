@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NeuRader | Ansible Execution Monitor</title>
 <link rel="icon" type="image/png" href="neurader.png">
+<link rel="icon" type="image/png" href="/neurader.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/neurader.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/neurader.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -219,7 +222,7 @@ footer{border-top:1px solid var(--border);padding:3rem 6%;display:flex;justify-c
     <a href="./docs.html">Docs</a>
     <a href="./alerting.html">Alerts</a>
     <a href="./suggestions.html">Suggestions</a>
-    <span class="nav-badge">v0.6.1</span>
+    <span class="nav-badge">v0.5.5</span>
   </div>
 </nav>
 
@@ -237,7 +240,7 @@ footer{border-top:1px solid var(--border);padding:3rem 6%;display:flex;justify-c
       <div class="scan-line"></div>
     </div>
     <div class="term-body">
-      <code><span class="prompt">$ </span>sudo curl -L https://neurader.cloud/neurader/releases/latest/neurader-linux-amd64 -o neurader &amp;&amp; sudo chmod +x neurader &amp;&amp; sudo ./neurader init</code>
+      <code><span class="prompt">$ </span>curl -L https://neurader.cloud/install.sh | sudo bash</code>
       <button class="copy-btn" onclick="copyInstall(this)" title="Copy command"><i class="far fa-copy"></i></button>
     </div>
   </div>
@@ -270,7 +273,7 @@ footer{border-top:1px solid var(--border);padding:3rem 6%;display:flex;justify-c
 
 <!-- ALERTING -->
 <section class="section alert-section" id="alerting">
-  <div class="section-label">Alerting — New in v0.6.1</div>
+  <div class="section-label">Alerting — New in v0.5.5</div>
   <h2 class="section-title">Failure happens.<br><span>Get notified instantly.</span></h2>
   <p class="section-desc">Every playbook run is assessed automatically. Failures trigger all configured channels simultaneously — no manual steps, no monitoring. NeuRader fires and forgets.</p>
 
@@ -452,7 +455,7 @@ footer{border-top:1px solid var(--border);padding:3rem 6%;display:flex;justify-c
     <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
       <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">x86_64 · Intel / AMD</div>
       <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;word-break:break-all;">neurader-linux-amd64</div>
-      <a href="https://neurader.cloud/neurader/releases/latest/neurader-linux-amd64" style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'"><i class="fas fa-download"></i> Download</a>
+      <a href="https://neurader.cloud/install.sh | sudo bash" style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'"><i class="fas fa-download"></i> Download</a>
     </div>
     <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
       <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">ARM64 · Graviton / Pi 4+</div>
@@ -534,7 +537,7 @@ footer{border-top:1px solid var(--border);padding:3rem 6%;display:flex;justify-c
     </svg>
     NEURADER
   </a>
-  <div class="footer-right">© 2026 NEURADER PROJECT · Omkar Jagtap</div>
+  <div class="footer-right">© 2026 NEURADER PROJECT · Omkar</div>
 </footer>
 
 <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
@@ -567,7 +570,7 @@ animate();
 </script>
 <script>
 function copyInstall(btn) {
-  const cmd = "sudo curl -L https://neurader.cloud/neurader/releases/latest/neurader-linux-amd64 -o neurader && sudo chmod +x neurader && sudo ./neurader init";
+  const cmd = "curl -L https://neurader.cloud/install.sh | sudo bash";
   navigator.clipboard.writeText(cmd).then(() => {
     const icon = btn.querySelector('i'); icon.className = "fas fa-check"; icon.style.color = "var(--accent)";
     setTimeout(() => { icon.className = "far fa-copy"; icon.style.color = ""; }, 2000);
